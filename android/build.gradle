@@ -47,5 +47,8 @@ allprojects {
         }
         google()
         maven { url 'https://www.jitpack.io' }
+        maven {
+            url "https://s3-us-west-2.amazonaws.com/si-mobile-sdks/android/"
+        }
     }
 }
