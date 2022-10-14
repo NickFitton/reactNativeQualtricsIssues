@@ -7,7 +7,6 @@
  */
 
 import React from 'react';
-import type {Node} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,7 +15,9 @@ import {
   Text,
   useColorScheme,
   View,
+  Button,
 } from 'react-native';
+import Qualtrics from 'react-native-qualtrics';
 
 import {
   Colors,
@@ -28,7 +29,7 @@ import {
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
+const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -54,12 +55,48 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App: () => Node = () => {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  function initMe() {
+    console.log('Initializing...');
+
+    Qualtrics.initializeProjectWithExtRefId(
+      'BrandID',
+
+      'ProjectID',
+
+      '',
+
+      initializationResults => {
+        console.log(initializationResults);
+
+        console.log('Initialization Done');
+      },
+    );
+  }
+
+  function evalMe() {
+    console.log('Evaluating...');
+
+    Qualtrics.evaluateProject(targetingResults => {
+      console.log(targetingResults);
+
+      for (var intercept in targetingResults) {
+        let result = targetingResults[intercept];
+
+        if (result.passed) {
+          Qualtrics.display();
+        }
+      }
+
+      console.log('Evaluation Done');
+    });
+  }
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -75,6 +112,8 @@ const App: () => Node = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <Button title="Initialize Me" onPress={() => initMe()} />
+          <Button title="Evaluate & Display Me" onPress={() => evalMe()} />
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
